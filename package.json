@@ -1,0 +1,25 @@
+{
+  "name": "wealthhealth-remaster-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsx watch src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.2",
+    "express": "^4.21.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "mysql2": "^3.11.3"
+  }
+}
