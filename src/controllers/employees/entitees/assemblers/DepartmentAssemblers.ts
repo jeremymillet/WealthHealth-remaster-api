@@ -1,4 +1,4 @@
-import Department from "../../../../repositories/employees/dao/department";
+import Department from "../../../../repositories/entitees/dao/department";
 
 class DepartmentAssembler { 
     dao;

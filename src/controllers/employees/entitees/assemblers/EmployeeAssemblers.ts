@@ -1,4 +1,6 @@
-import Employee from "../../../../repositories/employees/dao/employee";
+import dayjs from "dayjs";
+import Employee from "../../../../repositories/entitees/dao/employee";
+
 
 class EmployeeAssembler { 
     dao;
@@ -8,8 +10,8 @@ class EmployeeAssembler {
     toDto() {
         return this.dao.map(employee => ({
             id: employee.id,
-            firstName: employee.first_Name,
-            lastName: employee.last_Name,
+            firstName: employee.first_name,
+            lastName: employee.last_name,
             department: employee.department,
             state: employee.state,
             dateOfBirth: employee.date_of_birth,

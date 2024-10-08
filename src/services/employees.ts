@@ -1,4 +1,4 @@
-import { getDepatments, getEmployees, getStates } from "../repositories/employees/employeesRepository"
+import { getDepatments, getEmployees, getStates, postEmployees } from "../repositories/employees/employeesRepository"
 
 export const getDepatmentsService = async () => {
     return await getDepatments()
@@ -9,4 +9,8 @@ export const getStatesService = async () => {
 }
 export const getEmployeesService = async () => {
     return await getEmployees()
+}
+
+export const postEmployeesService = async (data) => {
+    return await postEmployees(data)
 }

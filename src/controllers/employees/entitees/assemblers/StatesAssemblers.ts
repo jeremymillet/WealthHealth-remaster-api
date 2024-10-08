@@ -1,4 +1,4 @@
-import State from "../../../../repositories/employees/dao/state";
+import State from "../../../../repositories/entitees/dao/state";
 
 class StateAssembler { 
     dao;
