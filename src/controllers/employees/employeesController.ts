@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { getDepatmentsService, getEmployeesService, getStatesService, postEmployeesService } from "../../services/employees";
+import { getDepartmentsService, getEmployeesService, getStatesService, postEmployeesService } from "../../services/employees";
 import DepartmentAssembler from "./entitees/assemblers/DepartmentAssemblers";
 import StateAssembler from "./entitees/assemblers/StatesAssemblers";
 import EmployeeAssembler from "./entitees/assemblers/EmployeeAssemblers";
 import EmployeeAssemblerDB from "../../repositories/entitees/assemblers/EmployeeAssemblers";
 
-export const getDepartments = async (req: Request, res: Response) => {
+export const getDepartments = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const departments = await getDepatmentsService()
+        const departments = await getDepartmentsService()
         return res.status(200).json(new DepartmentAssembler(departments).toDto())
 
     } catch (error) {
@@ -16,7 +16,7 @@ export const getDepartments = async (req: Request, res: Response) => {
 
 }
 
-export const getStates = async (req: Request, res: Response) => { 
+export const getStates = async (req: Request, res: Response): Promise<Response> => { 
     try {
         const states = await getStatesService()
         return res.status(200).json(new StateAssembler(states).toDto())
@@ -26,7 +26,7 @@ export const getStates = async (req: Request, res: Response) => {
     }
 }
 
-export const getEmployees = async (req: Request, res: Response) => { 
+export const getEmployees = async (req: Request, res: Response): Promise<Response> => { 
     try {
         const employees = await getEmployeesService()
         return res.status(200).json(new EmployeeAssembler(employees).toDto())
@@ -36,7 +36,7 @@ export const getEmployees = async (req: Request, res: Response) => {
     }
 }
 
-export const postEmployee = async (req: Request, res: Response) => { 
+export const postEmployee = async (req: Request, res: Response): Promise<Response> => { 
     try {
         const employee = req.body
         const employeeDB = new EmployeeAssemblerDB(employee).toDAO()

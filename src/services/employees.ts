@@ -1,7 +1,7 @@
-import { getDepatments, getEmployees, getStates, postEmployees } from "../repositories/employees/employeesRepository"
+import { getDepartments, getEmployees, getStates, postEmployees } from "../repositories/employees/employeesRepository"
 
-export const getDepatmentsService = async () => {
-    return await getDepatments()
+export const getDepartmentsService = async () => {
+    return await getDepartments()
 }
 
 export const getStatesService = async () => {

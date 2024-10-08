@@ -4,7 +4,7 @@ import Department from "../entitees/dao/department"
 import State from "../entitees/dao/state"
 import Employee from "../entitees/dao/employee"
 
-export const getDepatments = ():Promise<Department[]> => { 
+export const getDepartments = ():Promise<Department[]> => { 
     return new Promise((resolve, reject) => {
         connection.getConnection((err: NodeJS.ErrnoException | null, conn: PoolConnection) => {
         conn.query("SELECT * FROM departments", (error: QueryError | null, result: Department[]) => {
