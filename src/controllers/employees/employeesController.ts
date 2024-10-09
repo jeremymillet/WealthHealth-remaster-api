@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { getDepartmentsService, getEmployeesService, getStatesService, postEmployeesService } from "../../services/employees";
 import DepartmentAssembler from "./entitees/assemblers/DepartmentAssemblers";
 import StateAssembler from "./entitees/assemblers/StatesAssemblers";

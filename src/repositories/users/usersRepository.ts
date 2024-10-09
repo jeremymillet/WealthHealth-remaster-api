@@ -22,7 +22,7 @@ export const postLogin = (data:User): Promise<User> => {
                 }
                 const match = await bcrypt.compare(data.password, results[0].password);
                 if (match) {
-                    resolve(results[0]);  // Le mot de passe correspond
+                    resolve(results[0]);
                 } else {
                     return reject({ message: 'email or password incorrect' });
                 }

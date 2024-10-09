@@ -27,15 +27,15 @@ class EmployeeAssemblerDB {
     }
     toDAO() {
         return {
-            first_name: this.dto.FirstName,
-            last_name: this.dto.LastName,
-            department_id: this.dto.Department,  
-            state_id: this.dto.State,            
-            date_of_birth: this.formatDateTimeToMySQL(this.dto.DateOfBirth), 
-            start_date: this.formatDateTimeToMySQL(this.dto.StartDate),     
-            city: this.dto.City,
-            street: this.dto.Street,
-            zip_code: this.dto.ZipCode
+            first_name: this.dto.firstName,
+            last_name: this.dto.lastName,
+            department_id: this.dto.department,  
+            state_id: this.dto.state,            
+            date_of_birth: this.formatDateTimeToMySQL(this.dto.dateOfBirth), 
+            start_date: this.formatDateTimeToMySQL(this.dto.startDate),     
+            city: this.dto.city,
+            street: this.dto.street,
+            zip_code: this.dto.zipCode
         };
     }
     

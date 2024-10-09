@@ -2,6 +2,8 @@ import { Request, Response } from "express"
 import { postLoginService } from "../../services/users"
 import UserAssemblerDB from "../../repositories/entitees/assemblers/UserAssembler"
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config()
 
 
 export const postLogin = async (req: Request, res: Response) => { 
@@ -14,12 +16,13 @@ export const postLogin = async (req: Request, res: Response) => {
         }
         if (result) { 
             const token = jwt.sign(
-                { userId: result.id },  
+                {userId: result.user_id},  
                 process.env.TOKEN_SECRET || 'defaultSecretKey',  
                 { expiresIn: '24h' } 
             );
             return res.status(200).json({
                 message: 'Login successful',
+                userId: result.user_id,
                 token
             });
         }
