@@ -10,4 +10,6 @@ export default interface EmployeeDto {
     city: string;
     street: string;
     zipCode: number
+    stateId: string;
+    departmentId: string;
 }

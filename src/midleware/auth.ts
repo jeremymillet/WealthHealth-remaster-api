@@ -5,8 +5,6 @@ dotenv.config()
 export const auth = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1];
-        console.log(token);
-        console.log(process.env.TOKEN_SECRET);
         const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
         const userId = decodedToken.userId
         req.auth = { userId }
@@ -14,6 +12,6 @@ export const auth = (req, res, next) => {
     next()
     }
     catch (error) {
-        return res.status(401).json({ message: 'test' })
+        return res.status(401).json({ message: 'unauthorized' })
     }
 };

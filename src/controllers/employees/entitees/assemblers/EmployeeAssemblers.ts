@@ -19,6 +19,8 @@ class EmployeeAssembler {
             zipCode: employee.zip_code,
             street: employee.street,
             city: employee.city,
+            stateId: employee.state_id,
+            departmentId: employee.department_id,
         }));
     }
 }
