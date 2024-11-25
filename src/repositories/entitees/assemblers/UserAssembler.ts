@@ -7,8 +7,10 @@ class UserAssemblerDB {
     }
     toDAO() {
         return {
+            user_id: this.dto.user_id,
             email: this.dto.Email,
-            password : this.dto.Password,
+            password: this.dto.Password,
+            refreshToken: this.dto.RefreshToken,
         };
     }
     
