@@ -1,111 +1,97 @@
-import { PoolConnection, QueryError} from "mysql2"
-import { connection } from "../../database/db"
 import User from "../entitees/dao/user"
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import jwt from "jsonwebtoken";
+import db from '../../database/db'
 
 export const postLogin = (data: User): Promise<User> => {
-    return new Promise((resolve, reject) => { 
-        connection.getConnection((err: NodeJS.ErrnoException | null, conn: PoolConnection) => {
-            if (err) {
-                return reject({ message: 'Error establishing connection', error: err });
-            }
-
-            const query = "SELECT * FROM users WHERE email = ?";
-            conn.query(query, [data.email], async (error: QueryError | null, results: any[]) => {
-                if (error) {
-                    conn.release();
-                    return reject({ message: 'Error executing query', error });
-                }
-                if (!process.env.AUTH_REFRESH_TOKEN_SECRET) {
-                    throw new Error('La variable AUTH_REFRESH_TOKEN_SECRET est manquante dans les variables d\'environnement.');
-                }
-
-                if (results.length === 0) {
-                    conn.release();
-                    return reject({ message: 'email or password incorrect' });
-                }
-
-                const match = await bcrypt.compare(data.password, results[0].password);
-                if (match) {
-                    // Générer le refresh token
-
-                    const refreshToken = jwt.sign(
-                        { userId: data.user_id },  
-                        process.env.AUTH_REFRESH_TOKEN_SECRET || 'defaultSecretKey',
-                        { expiresIn: process.env.AUTH_REFRESH_TOKEN_EXPIRY }  
-                    );
-                    
-                    // Mise à jour du refresh token dans la base de données
-                    const updateTokenQuery = "UPDATE users SET refresh_token = ? WHERE user_id = ?";
-                    conn.query(updateTokenQuery, [refreshToken, results[0].user_id], (updateError) => {
-                        conn.release();
-                        if (updateError) {
-                            return reject({ message: 'Error updating refresh token', error: updateError });
-                        }
-                        results[0].refreshToken = refreshToken;  // Ajouter le refresh token aux résultats renvoyés
-                        resolve(results[0]);
-                    });
-                } else {
-                    conn.release();
-                    return reject({ message: 'email or password incorrect' });
-                }
-            });
-        });
-    });
-};
-
-export const verifyAndGenerateAccessToken = (refreshToken: string): Promise<string> => {
     return new Promise((resolve, reject) => {
-        connection.getConnection((err: NodeJS.ErrnoException | null, conn: PoolConnection) => {
+        // Récupérer l'utilisateur par email
+        db.get('SELECT * FROM users WHERE email = ?', [data.email], async (err, row: User | undefined) => {
             if (err) {
-                return reject({ message: 'Error establishing connection', error: err });
+                return reject({ message: 'Error executing query', error: err });
             }
 
-            // Vérifier la présence du refresh token dans la base de données
-            const query = 'SELECT * FROM users WHERE refresh_token = ?';
-            conn.query(query, [refreshToken], (error: QueryError | null, results: any[]) => {
-                conn.release();  // Libérer la connexion après la requête
-                if (error || results.length === 0) {
-                    console.log("test")
-                    return reject({ message: 'Invalid or not found refresh token', statusCode: 403 });
-                }
-                // Vérifier la validité du refresh token avec jwt.verify
-                jwt.verify(refreshToken, process.env.AUTH_REFRESH_TOKEN_SECRET || 'defaultRefreshKey', (err, user) => {
-                    if (err) {
-                        return reject({ message: 'Invalid refresh token', statusCode: 403 });
+            if (!process.env.AUTH_REFRESH_TOKEN_SECRET) {
+                return reject({ message: 'La variable AUTH_REFRESH_TOKEN_SECRET est manquante dans les variables d\'environnement.' });
+            }
+
+            if (!row) {
+                return reject({ message: 'Email or password incorrect' });
+            }
+
+            // Comparer les mots de passe
+            const match = await bcrypt.compare(data.password, row.password);
+            if (match) {
+                // Générer le refresh token
+                const refreshToken = jwt.sign(
+                    { userId: row.user_id },
+                    process.env.AUTH_REFRESH_TOKEN_SECRET || 'defaultSecretKey',
+                    { expiresIn: process.env.AUTH_REFRESH_TOKEN_EXPIRY }
+                );
+
+                // Mise à jour du refresh token dans la base de données
+                db.run('UPDATE users SET refresh_token = ? WHERE user_id = ?', [refreshToken, row.user_id], (updateError) => {
+                    if (updateError) {
+                        return reject({ message: 'Error updating refresh token', error: updateError });
                     }
 
-                    // Générer un nouveau access token
-                    const accessToken = jwt.sign(
-                        { userId: user.userId },  // On extrait l'userId du token
-                        process.env.AUTH_ACCESS_TOKEN_SECRET || 'defaultSecretKey',
-                        { expiresIn: process.env.AUTH_ACCESS_TOKEN_EXPIRY }  // Définir la durée d'expiration de l'access token
-                    );
-
-                    resolve(accessToken);  // Retourner le nouveau access token
+                    // Ajouter le refresh token aux résultats renvoyés
+                    row.refreshToken = refreshToken;
+                    resolve(row); // Résoudre la promesse avec l'utilisateur, incluant le refresh token
                 });
-            });
+            } else {
+                return reject({ message: 'Email or password incorrect' });
+            }
         });
     });
 };
+export const verifyAndGenerateAccessToken = async (refreshToken: string): Promise<string> => {
+    try {
+        // Vérifier si le refresh token existe dans la base
+        const user = await db.get('SELECT * FROM users WHERE refresh_token = ?', [refreshToken]);
 
-export const postLogOut = (refreshToken: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        console.log("test")
-        // Mise à jour du refresh_token à NULL dans la base de données
-        console.log(refreshToken)
-        connection.query('UPDATE users SET refresh_token = NULL WHERE refresh_token = ?', [refreshToken], (error) => {
-            console.log(refreshToken)
-            if (error) {
-                // En cas d'erreur, rejeter la promesse avec un message d'erreur
-                console.log(refreshToken)
-                return reject({ message: 'Invalid or not found refresh token', statusCode: 500 });
-            }
+        if (!user) {
+            throw { message: 'Invalid or not found refresh token', statusCode: 403 };
+        }
 
-            // Résoudre la promesse si l'opération a réussi
-            resolve('Logout successful, refresh token removed');
-        });
-    });
+        // Vérifier la validité du refresh token
+        if (!process.env.AUTH_REFRESH_TOKEN_SECRET) {
+            throw new Error('Missing AUTH_REFRESH_TOKEN_SECRET in environment variables');
+        }
+
+        // Décoder et vérifier le refresh token
+        const decoded = jwt.verify(refreshToken, process.env.AUTH_REFRESH_TOKEN_SECRET || 'defaultSecretKey') as jwt.JwtPayload;
+
+        if (!decoded?.userId) {
+            throw { message: 'Invalid refresh token', statusCode: 403 };
+        }
+
+        // Générer un nouvel access token
+        const accessToken = jwt.sign(
+            { userId: decoded.userId },
+            process.env.AUTH_ACCESS_TOKEN_SECRET || 'defaultSecretKey',
+            { expiresIn: process.env.AUTH_ACCESS_TOKEN_EXPIRY || '1h' }
+        );
+
+        return accessToken;
+    } catch (error) {
+        // Gestion des erreurs
+        throw { message: error.message || 'An error occurred', statusCode: error.statusCode || 500 };
+    }
+};
+export const postLogOut = async (refreshToken: string): Promise<string> => {
+    try {
+        // Supprimer le refresh token de la base de données
+        const result = await db.run('UPDATE users SET refresh_token = NULL WHERE refresh_token = ?', [refreshToken]);
+
+        // Vérifier si une ligne a été affectée
+        if ((result as any).changes === 0) {  // Type assertion to 'any' to access 'changes'
+            throw { message: 'Invalid or not found refresh token', statusCode: 403 };
+        }
+
+        return 'Logout successful, refresh token removed';
+    } catch (error) {
+        // Gestion des erreurs
+        throw { message: error.message || 'An error occurred', statusCode: error.statusCode || 500 };
+    }
 };

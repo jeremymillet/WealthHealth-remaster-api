@@ -1,7 +1,7 @@
 import DepartmentAssembler from "../controllers/employees/entitees/assemblers/DepartmentAssemblers"
 import EmployeeAssembler from "../controllers/employees/entitees/assemblers/EmployeeAssemblers"
 import StateAssembler from "../controllers/employees/entitees/assemblers/StatesAssemblers"
-import { deleteEmployees, getDepartments, getEmployees, getStates, putEmployees, postEmployees} from "../repositories/employees/employeesRepository"
+import { deleteEmployees, getDepartments, getEmployees, getStates, putEmployees, postEmployees, getEmployee} from "../repositories/employees/employeesRepository"
 import EmployeeAssemblerDB from "../repositories/entitees/assemblers/EmployeeAssemblers"
 
 export const getDepartmentsService = async () => {
