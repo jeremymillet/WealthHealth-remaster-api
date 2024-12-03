@@ -1,11 +1,9 @@
 export default interface Employee{
-    id: number;
+    id?: number;
     first_Name: string;
     last_Name: string;
-    department: number;
-    state: number;
-    date_of_birth: Date;
-    start_date: Date;
+    date_of_birth: string;
+    start_date: string;
     city: string;
     street: string;
     zip_code: number

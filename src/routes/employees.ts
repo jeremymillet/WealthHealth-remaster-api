@@ -9,8 +9,7 @@ router.get('/states', getStates);
 router.get('/', getEmployees);
 router.get('/:id', getEmployee);
 router.post('/', auth, postEmployee);
-router.delete('/:id', auth, deleteEmployee)
-router.put('/:id', auth,putEmployee)
-
+router.delete('/:id', auth, deleteEmployee);
+router.put('/:id', auth, putEmployee);
 
 export default router;

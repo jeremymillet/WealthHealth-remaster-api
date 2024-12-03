@@ -5,7 +5,6 @@ import Employee from "../entitees/dao/employee"
 import db from '../../database/db'
 
 
-
 export const getDepartments = async (): Promise<Department[]> => {
     return new Promise((resolve, reject) => {
         const query = "SELECT * FROM departments"; // Requête SQL
@@ -118,8 +117,8 @@ export const postEmployees = async (data: Employee): Promise<void> => {
         const values = [
             data.first_Name,
             data.last_Name,
-            data.department,
-            data.state,
+            data.department_id,
+            data.state_id,
             data.date_of_birth,
             data.start_date,
             data.city,
@@ -170,8 +169,8 @@ export const putEmployees = async (data: Employee, id: number): Promise<void> =>
         const values = [
             data.first_Name,
             data.last_Name,
-            data.department,
-            data.state,
+            data.department_id,
+            data.state_id,
             data.date_of_birth,
             data.start_date,
             data.city,

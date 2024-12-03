@@ -1,8 +1,9 @@
 import EmployeeDto from "../../../controllers/employees/entitees/dto/EmployeeDto";
+import Employee from "../dao/employee";
 
 class EmployeeAssemblerDB { 
     dto;
-    constructor(dto: EmployeeDto[]) {
+    constructor(dto: EmployeeDto[] | EmployeeDto) {
         this.dto = dto;
     }
     // Méthode pour formater les dates au format MySQL
@@ -29,14 +30,14 @@ class EmployeeAssemblerDB {
         return {
             first_Name: this.dto.firstName,
             last_Name: this.dto.lastName,
-            department: this.dto.department,  
-            state: this.dto.state,            
+            department_id: this.dto.department,  
+            state_id: this.dto.state,            
             date_of_birth: this.formatDateTimeToMySQL(this.dto.dateOfBirth), 
             start_date: this.formatDateTimeToMySQL(this.dto.startDate),     
             city: this.dto.city,
             street: this.dto.street,
             zip_code: this.dto.zipCode
-        };
+        }as Employee;
     }
     
 }

@@ -4,11 +4,12 @@ import Employee from "../../../../repositories/entitees/dao/employee";
 
 class EmployeeAssembler { 
     dao;
-    constructor(dao: Employee[]) {
+    constructor(dao: Employee[] | Employee) {
         this.dao = dao;
     }
     toDto() {
-        return this.dao.map(employee => ({
+        if (Array.isArray(this.dao)){
+            return this.dao.map(employee => ({
             id: employee.id,
             firstName: employee.first_name,
             lastName: employee.last_name,
@@ -22,6 +23,21 @@ class EmployeeAssembler {
             stateId: employee.state_id,
             departmentId: employee.department_id,
         }));
+        }
+        return {
+            id: this.dao.id,
+            firstName: this.dao.first_name,
+            lastName: this.dao.last_name,
+            department: this.dao.department,
+            state: this.dao.state,
+            dateOfBirth: this.dao.date_of_birth,
+            startDate: this.dao.start_date,
+            zipCode: this.dao.zip_code,
+            street: this.dao.street,
+            city: this.dao.city,
+            stateId: this.dao.state_id,
+            departmentId: this.dao.department_id,
+        };
     }
 }
 

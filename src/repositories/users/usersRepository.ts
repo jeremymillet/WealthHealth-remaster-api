@@ -2,6 +2,7 @@ import User from "../entitees/dao/user"
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 import db from '../../database/db'
+import { RunResult } from "sqlite3";
 
 export const postLogin = (data: User): Promise<User> => {
     return new Promise((resolve, reject) => {
@@ -82,10 +83,17 @@ export const verifyAndGenerateAccessToken = async (refreshToken: string): Promis
 export const postLogOut = async (refreshToken: string): Promise<string> => {
     try {
         // Supprimer le refresh token de la base de données
-        const result = await db.run('UPDATE users SET refresh_token = NULL WHERE refresh_token = ?', [refreshToken]);
-
+        const result: RunResult = await new Promise((resolve, reject) => {
+        db.run('UPDATE users SET refresh_token = NULL WHERE refresh_token = ?', [refreshToken], function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(this);  // `this` correspond à l'objet RunResult
+            }
+            });
+        });
         // Vérifier si une ligne a été affectée
-        if ((result as any).changes === 0) {  // Type assertion to 'any' to access 'changes'
+        if (result.changes === 0) {
             throw { message: 'Invalid or not found refresh token', statusCode: 403 };
         }
 

@@ -1,6 +1,7 @@
 import DepartmentAssembler from "../controllers/employees/entitees/assemblers/DepartmentAssemblers"
 import EmployeeAssembler from "../controllers/employees/entitees/assemblers/EmployeeAssemblers"
 import StateAssembler from "../controllers/employees/entitees/assemblers/StatesAssemblers"
+import EmployeeDto from "../controllers/employees/entitees/dto/EmployeeDto"
 import { deleteEmployees, getDepartments, getEmployees, getStates, putEmployees, postEmployees, getEmployee} from "../repositories/employees/employeesRepository"
 import EmployeeAssemblerDB from "../repositories/entitees/assemblers/EmployeeAssemblers"
 
@@ -19,18 +20,19 @@ export const getEmployeesService = async () => {
 }
 export const getEmployeeService = async (id) => {
     const employee = await getEmployee(id)
+    if(employee === null ){return null}
     return new EmployeeAssembler(employee).toDto()
 }
 
-export const postEmployeesService = async (data) => {
+export const postEmployeesService = async (data : EmployeeDto) => {
     const employeeDB = new EmployeeAssemblerDB(data).toDAO()
     return await postEmployees(employeeDB)
 }
 
-export const deleteEmployeesService = async (data) => {
+export const deleteEmployeesService = async (data: number) => {
     return await deleteEmployees(data)
 }
-export const putEmployeeService = async (id, data,) => { 
+export const putEmployeeService = async (id :number, data:EmployeeDto,) => { 
     const employeeDB = new EmployeeAssemblerDB(data).toDAO()
     return await putEmployees(employeeDB,id)
 }
