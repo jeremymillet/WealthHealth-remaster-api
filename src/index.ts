@@ -9,8 +9,12 @@ const app = express();
 
 const port = process.env.PORT || 3001;
 
+const allowedOrigins = [
+    'https://wealthhealth-remaster.onrender.com',
+    'http://localhost:5174',
+];
 app.use(cors({
-    origin: 'https://wealthhealth-remaster.onrender.com', // Adresse de votre frontend
+    origin: allowedOrigins,
     credentials: true, // Nécessaire pour envoyer les cookies
 }));
 app.use(express.json());
