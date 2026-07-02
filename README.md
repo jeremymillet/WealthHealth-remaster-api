@@ -213,11 +213,6 @@ Le frontend React est disponible ici :
 
 # 🚀 Évolutions prévues
 
-- 🔍 Recherche avancée
-- 📄 Pagination
-- 📊 Tableau de bord
-- 📈 Statistiques
-- 🧪 Tests automatisés
 - 🐳 Déploiement avec Docker
 
 ---
